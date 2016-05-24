@@ -27,30 +27,25 @@ class PlayLayer(cocos.layer.Layer):
         self.score_text_left = cocos.text.Label("0", position=(20, height - 20), bold=True, font_size = 15, \
                                                 color=(255, 0, 0, 255), width=20, height=20, anchor_x='center', anchor_y='center')
         self.score_text_right = cocos.text.Label("0", position=(width - 20, height - 20), bold=True, font_size = 15, \
-                                                color=(0, 255, 255, 255), width=20, height=20, anchor_x='center', anchor_y='center')
+                                                color=(0, 255, 0, 255), width=20, height=20, anchor_x='center', anchor_y='center')
 
         cellsize = self.pingpong.width * 1.25
         self.collman = cm.CollisionManagerGrid(0, width, 0, height,
                                                cellsize, cellsize)
-        self.input = defaultdict(int)        
+        self.input = defaultdict(int)     
+        self.lpaddle.position = 0, height/2
+        self.rpaddle.position = width, height/2
+        self.pingpong.init()
         self.add(self.pingpong)
         self.add(self.rpaddle)
         self.add(self.lpaddle)
         self.add(self.score_text_left)
         self.add(self.score_text_right)
-        self.model.push_handlers(self)
         self.do(Repeat(CallFunc(self.update)))
-
-    def on_enter(self):
-        super(PlayLayer, self).on_enter()
-        width = director._window_virtual_width
-        height = director._window_virtual_height
-        self.lpaddle.position = 0, height/2
-        self.rpaddle.position = width, height/2
-        self.pingpong.init()
         self.lpaddle.do(RotateBy(360, 2))
-        self.rpaddle.do(RotateBy(360, 2))
- 
+        self.rpaddle.do(RotateBy(360, 2))   
+        self.model.push_handlers(self)
+        
     def on_key_press(self, k, m):
         self.input[k] = 1
         
@@ -63,10 +58,14 @@ class PlayLayer(cocos.layer.Layer):
     def on_rpaddle_score(self):
         self.score_text_right.element.text = str(self.model.right_score)
 
-    def on_game_over(self):
-        pass
-
-
+    def on_game_over(self, winner, winner_color):
+        w = director._window_virtual_width
+        h = director._window_virtual_height
+        winning_text = cocos.text.Label("%s Wins!!!!!" % winner, position=(w/2, h/2), bold=True, font_size = 15,\
+                                        color=winner_color, width=20, height=20, anchor_x='center', anchor_y='center')        
+        self.add(winning_text)
+        self.stop()
+        
     def update(self):
 
         self.collman.clear()
@@ -84,6 +83,7 @@ class PlayLayer(cocos.layer.Layer):
         
         self.lpaddle.do(CallFunc(self.lpaddle.move, lpaddle_dy))
         self.rpaddle.do(CallFunc(self.rpaddle.move, rpaddle_dy))
+        self.pingpong.do(CallFunc(self.pingpong.move))
 
 class MenuLayer(cocos.layer.Layer):
     

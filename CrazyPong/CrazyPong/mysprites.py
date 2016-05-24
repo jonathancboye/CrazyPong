@@ -13,17 +13,16 @@ class PingPong(cocos.sprite.Sprite):
         self.position = x, y
         center = eu.Vector2(x,y)
         self.cshape = cm.CircleShape(center, self.width/2)
-        self.init()  
-        self.do(Repeat(CallFunc(self.update)))
-    
+        self.init()
+
     def init(self):
         width = director._window_virtual_width
         height = director._window_virtual_height
         self.velocity_x = 5
-        self.accleration_x = 0
+        self.accleration_x = 20
         self.velocity_y = 0
         self.accleration_y = 0
-        self.maxspeed = 10
+        self.maxspeed = 20
         self.position = width/2, height/2
         self.cshape.center = eu.Vector2(width/2, height/2)
           
@@ -35,7 +34,7 @@ class PingPong(cocos.sprite.Sprite):
         self.direction_y = 0
         self.do(RotateBy(360, 2))   
 
-    def update(self):
+    def move(self):
         width = director._window_virtual_width
         height = director._window_virtual_height
         dx = 0
@@ -70,7 +69,7 @@ class PingPong(cocos.sprite.Sprite):
             else:
                 # ball has left the board
                 # right side scores a point
-                self.model.rpaddle_scroes()
+                self.model.rpaddle_scores()
                 self.init()
 
         if self.direction_y > 0:

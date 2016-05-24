@@ -13,10 +13,14 @@ class GameModel(pyglet.event.EventDispatcher):
     def lpaddle_scores(self):
         self.left_score += 1
         self.dispatch_event('on_lpaddle_score')
+        if(self.left_score >= 10):
+            self.dispatch_event('on_game_over', 'Red Player', (255, 0, 0, 255))
 
-    def rpaddle_scroes(self):
+    def rpaddle_scores(self):
         self.right_score += 1
         self.dispatch_event('on_rpaddle_score')
+        if(self.right_score >= 10):
+            self.dispatch_event('on_game_over', 'Green Player', (0, 255, 0, 255))
 
     def game_over(self):
         self.dispatch_event('on_game_over')
