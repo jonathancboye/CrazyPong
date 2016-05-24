@@ -1,4 +1,4 @@
-﻿import cocos 
+﻿import cocos
 from cocos.actions import *
 from cocos.director import director
 import cocos.collision_model as cm
