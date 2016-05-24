@@ -14,22 +14,18 @@ class PingPong(cocos.sprite.Sprite):
         self.position = x, y
         center = eu.Vector2(x,y)
         self.cshape = cm.CircleShape(center, self.width/2)
-        self.window_height = director._window_virtual_height
-        self.window_width = director._window_virtual_width
-        self.init()
-
-        
-        
+        self.init()  
         self.do(Repeat(CallFunc(self.update)))
     
     def init(self):
+        global width, height
         self.velocity_x = 5
         self.accleration_x = 0
         self.velocity_y = 0
         self.accleration_y = 0
         self.maxspeed = 10
-        self.position = self.window_width/2, self.window_height/2
-        self.cshape.center = eu.Vector2(self.window_width/2, self.window_height/2)
+        self.position = width/2, height/2
+        self.cshape.center = eu.Vector2(width/2, height/2)
           
         if(random.randint(0,1)):
             self.direction_x = 1
@@ -40,6 +36,7 @@ class PingPong(cocos.sprite.Sprite):
         self.do(RotateBy(360, 2))   
 
     def update(self):
+        global width, height
         dx = 0
         dy = 0
 
@@ -54,7 +51,7 @@ class PingPong(cocos.sprite.Sprite):
 
         if self.direction_x > 0:
             # check if ball has exited right side of the board
-            right_diff = self.window_width - self.position[0] + self.width/2
+            right_diff = width - self.position[0] + self.width/2
             if right_diff > 0:
                 # ball is still in play
                 dx = self.velocity_x * self.direction_x
@@ -75,7 +72,7 @@ class PingPong(cocos.sprite.Sprite):
 
         if self.direction_y > 0:
             # check if ball has exited top of the board
-            top_diff = self.window_height - self.position[1] + self.height/2
+            top_diff = height - self.position[1] - self.height/2
             if top_diff <= 0:
                 # ball hit top
                 self.direction_y *= -1
@@ -108,10 +105,12 @@ class PingPong(cocos.sprite.Sprite):
     
 
 class Paddle(cocos.sprite.Sprite):
+
+    
     
     def __init__(self, x, y, r, g, b):
+
         super(Paddle, self).__init__('rectangle.png', color=(r, g, b), scale=.2)
-        self.window_height = director._window_virtual_height
         self.position = x, y
         center = eu.Vector2(x, y)
         self.cshape = cm.AARectShape(center, self.width/2, self.height/2)
@@ -121,7 +120,7 @@ class Paddle(cocos.sprite.Sprite):
         self.maxspeed = 100   
        
     def move(self, dy):
-     
+        global width, height
         if dy == 0:
             self.velocity = 0
             self.accleration = 1
@@ -135,7 +134,7 @@ class Paddle(cocos.sprite.Sprite):
             #check if paddle is hitting the upperbound or lowerbound of table
             if dy > 0:
                 self.direction = 1
-                top_diff = self.window_height - (self.position[1] + self.height/2)                        
+                top_diff = height - (self.position[1] + self.height/2)                        
                 if  top_diff > 0:              
                     self.do(MoveBy((0, self.velocity * dy), 0))
                 else:
