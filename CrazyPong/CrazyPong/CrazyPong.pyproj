@@ -5,14 +5,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>930de9e6-631d-4f95-b815-cd742c8983f9</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>CrazyPong.py</StartupFile>
+    <StartupFile>crazypong.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>CrazyPong</Name>
     <RootNamespace>CrazyPong</RootNamespace>
-    <InterpreterId>{98e165c5-6872-4da3-9967-e6595dc9fae3}</InterpreterId>
+    <InterpreterId>{24180584-f8fd-4715-851d-893620ec4cdb}</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -28,7 +28,16 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CrazyPong.py" />
+    <Compile Include="crazypong.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="mylayers.py" />
+    <Compile Include="model.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="mysprites.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="KA_Ball.png" />
@@ -37,15 +46,15 @@
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
-      <Id>{98e165c5-6872-4da3-9967-e6595dc9fae3}</Id>
-      <BaseInterpreter>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</BaseInterpreter>
+      <Id>{24180584-f8fd-4715-851d-893620ec4cdb}</Id>
+      <BaseInterpreter>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</BaseInterpreter>
       <Version>2.7</Version>
-      <Description>env (Python 2.7)</Description>
+      <Description>env (Python 64-bit 2.7)</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <LibraryPath>Lib\</LibraryPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X86</Architecture>
+      <Architecture>Amd64</Architecture>
     </Interpreter>
   </ItemGroup>
   <Import Condition="Exists($(PtvsTargetsFile))" Project="$(PtvsTargetsFile)" />
