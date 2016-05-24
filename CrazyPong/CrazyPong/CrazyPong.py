@@ -93,12 +93,15 @@ class PingPong(cocos.sprite.Sprite):
     def collided(self, paddle):
         if paddle.position[0] == 0:
             #left paddle
+            self.model.lpaddle_scores()
             self.direction_x = 1
             self.do(RotateBy(360, 1))
         else:
             #right paddle
+            self.model.rpaddle_scroes()
             self.direction_x = -1
             self.do(Reverse(RotateBy(360, 1)))
+        
         if(paddle.velocity != 0):
             self.velocity_x = paddle.velocity
         
@@ -107,9 +110,7 @@ class PingPong(cocos.sprite.Sprite):
     
 
 class Paddle(cocos.sprite.Sprite):
-
-    
-    
+ 
     def __init__(self, x, y, r, g, b):
 
         super(Paddle, self).__init__('rectangle.png', color=(r, g, b), scale=.2)
@@ -179,6 +180,7 @@ class PlayLayer(cocos.layer.Layer):
         self.add(self.pingpong)
         self.add(self.rpaddle)
         self.add(self.lpaddle)
+        
 
         self.do(Repeat(CallFunc(self.update)))
 

@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>CrazyPong</Name>
     <RootNamespace>CrazyPong</RootNamespace>
-    <InterpreterId>{cf4ddf91-e61d-4b99-b2ee-abdad384379f}</InterpreterId>
+    <InterpreterId>{98e165c5-6872-4da3-9967-e6595dc9fae3}</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -36,11 +36,11 @@
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="env1\">
-      <Id>{cf4ddf91-e61d-4b99-b2ee-abdad384379f}</Id>
+    <Interpreter Include="env\">
+      <Id>{98e165c5-6872-4da3-9967-e6595dc9fae3}</Id>
       <BaseInterpreter>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</BaseInterpreter>
       <Version>2.7</Version>
-      <Description>env1 (Python 2.7)</Description>
+      <Description>env (Python 2.7)</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <LibraryPath>Lib\</LibraryPath>
