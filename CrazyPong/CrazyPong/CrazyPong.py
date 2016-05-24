@@ -1,4 +1,5 @@
 ﻿import cocos
+import pyglet
 from cocos.actions import *
 from cocos.director import director
 import cocos.collision_model as cm
@@ -9,8 +10,9 @@ import random
 
 class PingPong(cocos.sprite.Sprite):
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, model):
         super(PingPong, self).__init__('KA_Ball.png', scale=.2)
+        self.model = model
         self.position = x, y
         center = eu.Vector2(x,y)
         self.cshape = cm.CircleShape(center, self.width/2)
@@ -156,14 +158,14 @@ class PlayLayer(cocos.layer.Layer):
     is_event_handler = True
     
     
-    def __init__(self):
+    def __init__(self, model):
         global width, height
 
         super(PlayLayer, self).__init__()
 
 
-        
-        self.pingpong = PingPong(width/2, height/2)
+        self.model = model
+        self.pingpong = PingPong(width/2, height/2, self.model)
         self.lpaddle = Paddle(0, height/2,
                               255, 0, 0)
         self.rpaddle = Paddle(width,
@@ -194,6 +196,12 @@ class PlayLayer(cocos.layer.Layer):
         
     def on_key_release(self, k, m):
         self.input[k] = 0    
+
+    def on_lpaddle_score(self):
+        print 'lpaddle scores'
+
+    def on_rpaddle_score(self):
+        print 'rpaddle scores'
 
 
     def update(self):
@@ -242,7 +250,8 @@ class GameLayer(cocos.layer.MultiplexLayer):
     is_event_handler = True
 
     def __init__(self):
-        super(GameLayer, self).__init__(MenuLayer(), PlayLayer())
+        self.gamemodel = GameModel()
+        super(GameLayer, self).__init__(MenuLayer(), PlayLayer(self.gamemodel))
 
     def on_key_press(self, k, m):
         # Player vs. Computer
@@ -254,6 +263,24 @@ class GameLayer(cocos.layer.MultiplexLayer):
         # Pause to menu
         if k == key.P:
             self.switch_to(0)
+
+class GameModel(pyglet.event.EventDispatcher):
+
+    is_event_handler = True
+
+    def __init__(self):
+        super(GameModel, self).__init__()
+        self.left_score = 0
+        self.right_score = 0
+
+    def lpaddle_scores(self):
+        self.dispatch_event('on_lpaddle_score')
+
+    def rpaddle_scroes(self):
+        self.dispatch_event('on_rpaddle_score')
+
+GameModel.register_event_type('on_lpaddle_score')
+GameModel.register_event_type('on_rpaddle_score')
 
 
 
