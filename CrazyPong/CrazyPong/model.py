@@ -37,8 +37,8 @@ class GameModel(pyglet.event.EventDispatcher):
 
     # Start a new game
     def game_start(self):
-        self.left_score = 9
-        self.right_score = 9
+        self.left_score = 0
+        self.right_score = 0
         self.state = self.states['playing']
         self.dispatch_event('on_game_start')
         self.dispatch_event('on_update_scores')
