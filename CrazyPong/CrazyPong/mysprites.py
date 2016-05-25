@@ -10,29 +10,27 @@ class PingPong(cocos.sprite.Sprite):
     def __init__(self, x, y, model):
         super(PingPong, self).__init__('KA_Ball.png', scale=.2)
         self.model = model
-        self.position = x, y
-        center = eu.Vector2(x,y)
+        self.postion = x, y
+        center = eu.Vector2(x, y)
         self.cshape = cm.CircleShape(center, self.width/2)
         self.init()
 
     def init(self):
         width = director._window_virtual_width
         height = director._window_virtual_height
+        self.position = width/2, height/2
         self.velocity_x = 5
         self.accleration_x = 0
         self.velocity_y = 0
         self.accleration_y = 0
         self.maxspeed = 5
-        self.position = width/2, height/2
-        self.cshape.center = eu.Vector2(width/2, height/2)
           
         if(random.randint(0,1)):
             self.direction_x = 1
         else:
             self.direction_x = -1
 
-        self.direction_y = 0
-        self.do(RotateBy(360, 2))   
+        self.direction_y = 0  
 
     def move(self):
         width = director._window_virtual_width
@@ -58,7 +56,7 @@ class PingPong(cocos.sprite.Sprite):
             else:
                # ball has left the board
                # Left side scores a point
-               self.model.lpaddle_scores()
+               self.model.update_scores('left')
                self.init()
         else:
             # check if ball has exited left side of the board
@@ -69,7 +67,7 @@ class PingPong(cocos.sprite.Sprite):
             else:
                 # ball has left the board
                 # right side scores a point
-                self.model.rpaddle_scores()
+                self.model.update_scores('right')
                 self.init()
 
         if self.direction_y > 0:
