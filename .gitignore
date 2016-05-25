@@ -5,3 +5,5 @@
 /CrazyPong/CrazyPong/env
 *.pyproj
 *.pyc
+*.sln
+*.suo
