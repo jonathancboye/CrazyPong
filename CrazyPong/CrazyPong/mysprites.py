@@ -19,10 +19,10 @@ class PingPong(cocos.sprite.Sprite):
         width = director._window_virtual_width
         height = director._window_virtual_height
         self.velocity_x = 5
-        self.accleration_x = 20
+        self.accleration_x = 0
         self.velocity_y = 0
         self.accleration_y = 0
-        self.maxspeed = 20
+        self.maxspeed = 5
         self.position = width/2, height/2
         self.cshape.center = eu.Vector2(width/2, height/2)
           
