@@ -13,11 +13,13 @@ class PlayLayer(cocos.layer.Layer):
 
     is_event_handler = True
     
-    def __init__(self, model):
+    def __init__(self, model, input):
+        super(PlayLayer, self).__init__()
+        self.input = input
+        self.model = model
         width = director._window_virtual_width
         height = director._window_virtual_height
-        super(PlayLayer, self).__init__()
-        self.model = model
+        super(PlayLayer, self).on_enter()
         self.pingpong = PingPong(width/2, height/2, self.model)
         self.lpaddle = Paddle(0, height/2,
                               255, 0, 0)
@@ -28,43 +30,60 @@ class PlayLayer(cocos.layer.Layer):
                                                 color=(255, 0, 0, 255), width=20, height=20, anchor_x='center', anchor_y='center')
         self.score_text_right = cocos.text.Label("0", position=(width - 20, height - 20), bold=True, font_size = 15, \
                                                 color=(0, 255, 0, 255), width=20, height=20, anchor_x='center', anchor_y='center')
-
+        self.pause_text = cocos.text.Label("PAUSED", position=(width/2, height/2), bold=True, font_size = 20, \
+                                                color=(51, 153, 255, 255), width=40, height=40, anchor_x='center', anchor_y='center')
+        self.winning_text = cocos.text.Label("", position=(width/2, height/2), bold=True, font_size = 15,\
+                                             color=(0, 0, 0, 0), width=20, height=20, anchor_x='center', anchor_y='center')
+        self.info_text = cocos.text.Label("PRESS SPACE FOR MENU", position=(width/2, 40), bold=True, font_size = 20,\
+                                             color=(0, 0, 0, 0), width=40, height=40, anchor_x='center', anchor_y='center')
         cellsize = self.pingpong.width * 1.25
         self.collman = cm.CollisionManagerGrid(0, width, 0, height,
                                                cellsize, cellsize)
-        self.input = defaultdict(int)     
         self.lpaddle.position = 0, height/2
         self.rpaddle.position = width, height/2
-        self.pingpong.init()
-        self.add(self.pingpong)
         self.add(self.rpaddle)
         self.add(self.lpaddle)
         self.add(self.score_text_left)
         self.add(self.score_text_right)
-        self.do(Repeat(CallFunc(self.update)))
+        self.add(self.pingpong)
         self.lpaddle.do(RotateBy(360, 2))
-        self.rpaddle.do(RotateBy(360, 2))   
+        self.rpaddle.do(RotateBy(360, 2)) 
+        self.do(Delay(2) + Repeat(CallFunc(self.update)))       
         self.model.push_handlers(self)
         
-    def on_key_press(self, k, m):
-        self.input[k] = 1
-        
-    def on_key_release(self, k, m):
-        self.input[k] = 0    
 
-    def on_lpaddle_score(self):
+    def on_update_scores(self):
         self.score_text_left.element.text = str(self.model.left_score)
-
-    def on_rpaddle_score(self):
         self.score_text_right.element.text = str(self.model.right_score)
 
+    def on_game_start(self):
+        width = director._window_virtual_width
+        height = director._window_virtual_height
+        self.lpaddle.position = 0, height/2
+        self.rpaddle.position = width, height/2
+        self.pingpong.init()
+        self.resume() 
+
+    def on_game_pause(self):
+        self.add(self.pause_text, z=2)
+        self.pause()
+
+    def on_game_resume(self):
+        self.remove(self.pause_text)
+        self.resume()
+
     def on_game_over(self, winner, winner_color):
-        w = director._window_virtual_width
-        h = director._window_virtual_height
-        winning_text = cocos.text.Label("%s Wins!!!!!" % winner, position=(w/2, h/2), bold=True, font_size = 15,\
-                                        color=winner_color, width=20, height=20, anchor_x='center', anchor_y='center')        
-        self.add(winning_text)
-        self.stop()
+        self.winning_text.element.color = winner_color
+        self.info_text.element.color = winner_color  
+        self.winning_text.element.text = "%s Wins!!!!" % winner        
+        self.add(self.winning_text, z=2)
+        self.add(self.info_text, z=2)
+        self.pause()
+
+    def on_exit(self):
+        super(PlayLayer, self).on_exit()
+        self.remove(self.winning_text)
+        self.remove(self.info_text)
         
     def update(self):
 
@@ -113,19 +132,43 @@ class GameLayer(cocos.layer.MultiplexLayer):
     is_event_handler = True
 
     def __init__(self):
-        self.gamemodel = GameModel()
-        super(GameLayer, self).__init__(MenuLayer(), PlayLayer(self.gamemodel))
-
+        self.input = defaultdict(int) 
+        self.model = GameModel()
+        self.menu = MenuLayer()
+        self.play = PlayLayer(self.model, self.input)
+        super(GameLayer, self).__init__(self.menu, self.play)
+                
     def on_key_press(self, k, m):
+        self.input[k] = 1
+       
         # Player vs. Player
-        if k == key._1:
-            self.gamemodel.current_scene = 1
-            self.switch_to(1)
+        if self.input[key._1]:
+            if(self.model.state == self.model.states['menu']):
+                self.model.game_start()
+                self.switch_to(1)
+       
         # Player vs. Computer
-        if k == key._2:
-            pass
-        # Pause to menu
-        if k == key.P:
-            self.gamemodel.current_scene = 2
-            self.switch_to(0)
+        if self.input[key._2]:
+             if(self.model.state == self.model.states['menu']):
+               # TODO: implement AI for computer
+                pass
+       
+        # Pause game
+        if self.input[key.P]:
+            if(self.model.state == self.model.states['playing']):
+                self.model.game_paused()
+            elif(self.model.state == self.model.states['paused']):
+                self.model.game_resume()
+
+        if self.input[key.R]:
+            if(self.model.state == self.model.states['paused']):
+                self.model.game_start()
+
+        if self.input[key.SPACE]:
+            if(self.model.state == self.model.states['game_over']):
+                self.model.menu()
+                self.switch_to(0)
+
+    def on_key_release(self, k, m):
+        self.input[k] = 0   
 
