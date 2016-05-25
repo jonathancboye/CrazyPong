@@ -23,7 +23,7 @@ class PingPong(cocos.sprite.Sprite):
         self.accleration_x = 0
         self.velocity_y = 0
         self.accleration_y = 0
-        self.maxspeed = 5
+        self.maxspeed = 10
           
         if(random.randint(0,1)):
             self.direction_x = 1
@@ -147,6 +147,7 @@ class Paddle(cocos.sprite.Sprite):
                 if bottom_diff > 0:
                     self.do(MoveBy((0, self.velocity * dy), 0))
                 else:
-                    self.do(MoveBy((0, bottom_diff * -1), 0))  
-        
+                    self.do(MoveBy((0, bottom_diff * -1), 0)) 
         self.cshape.center = eu.Vector2(self.x, self.y)
+
+ 

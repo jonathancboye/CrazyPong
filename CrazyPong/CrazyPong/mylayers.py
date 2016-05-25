@@ -34,8 +34,10 @@ class PlayLayer(cocos.layer.Layer):
                                                 color=(51, 153, 255, 255), width=40, height=40, anchor_x='center', anchor_y='center')
         self.winning_text = cocos.text.Label("", position=(width/2, height/2), bold=True, font_size = 15,\
                                              color=(0, 0, 0, 0), width=20, height=20, anchor_x='center', anchor_y='center')
-        self.info_text = cocos.text.Label("PRESS SPACE FOR MENU", position=(width/2, 40), bold=True, font_size = 20,\
+        self.gameover_info_text = cocos.text.Label("PRESS SPACE FOR MENU", position=(width/2, 40), bold=True, font_size = 20,\
                                              color=(0, 0, 0, 0), width=40, height=40, anchor_x='center', anchor_y='center')
+        self.pause_info_text = cocos.text.Label("PRESS SPACE TO QUIT TO MENU", position=(width/2, 40), bold=True, font_size = 20,\
+                                             color=(51, 153, 255, 255), width=40, height=40, anchor_x='center', anchor_y='center')
         cellsize = self.pingpong.width * 1.25
         self.collman = cm.CollisionManagerGrid(0, width, 0, height,
                                                cellsize, cellsize)
@@ -45,12 +47,10 @@ class PlayLayer(cocos.layer.Layer):
         self.add(self.lpaddle)
         self.add(self.score_text_left)
         self.add(self.score_text_right)
-        self.add(self.pingpong)
-        self.lpaddle.do(RotateBy(360, 2))
-        self.rpaddle.do(RotateBy(360, 2)) 
-        self.do(Delay(2) + Repeat(CallFunc(self.update)))       
+        self.add(self.pingpong)  
         self.model.push_handlers(self)
-        
+        self.callupdate = None
+
 
     def on_update_scores(self):
         self.score_text_left.element.text = str(self.model.left_score)
@@ -59,32 +59,60 @@ class PlayLayer(cocos.layer.Layer):
     def on_game_start(self):
         width = director._window_virtual_width
         height = director._window_virtual_height
-        self.lpaddle.position = 0, height/2
+        self.lpaddle.position = 0, height/2      
         self.rpaddle.position = width, height/2
         self.pingpong.init()
+        self.lpaddle.do(RotateBy(360, 2))
+        self.rpaddle.do(RotateBy(360, 2))
+        self.pingpong.do(RotateBy(360, 2))
+        self.callupdate = self.do(Delay(2) + Repeat(CallFunc(self.update)))     
         self.resume() 
-
+    
     def on_game_pause(self):
+        ''' Handles on_game_pause events.
+            Displays paused text and pauses
+            the game. '''
+        
         self.add(self.pause_text, z=2)
+        self.add(self.pause_info_text, z=2)
         self.pause()
 
     def on_game_resume(self):
+        ''' Handles on_game_resume events.
+            Removes paused text from screen
+            and resumes the game. ''' 
+            
         self.remove(self.pause_text)
+        self.remove(self.pause_info_text)
         self.resume()
 
     def on_game_over(self, winner, winner_color):
+        ''' Handles on_game_over events.
+            Displays who won and pauses the game. '''
+
         self.winning_text.element.color = winner_color
-        self.info_text.element.color = winner_color  
+        self.gameover_info_text.element.color = winner_color  
         self.winning_text.element.text = "%s Wins!!!!" % winner        
         self.add(self.winning_text, z=2)
-        self.add(self.info_text, z=2)
+        self.add(self.gameover_info_text, z=2)
         self.pause()
 
     def on_exit(self):
         super(PlayLayer, self).on_exit()
-        self.remove(self.winning_text)
-        self.remove(self.info_text)
-        
+        self.remove_action(self.callupdate)
+        try:
+            self.remove(self.winning_text)
+            self.remove(self.gameover_info_text)
+        except Exception:
+            pass
+
+        try:
+            self.remove(self.pause_text)
+            self.remove(self.pause_info_text)
+        except Exception:
+            pass
+   
+    
     def update(self):
 
         self.collman.clear()
@@ -160,12 +188,13 @@ class GameLayer(cocos.layer.MultiplexLayer):
             elif(self.model.state == self.model.states['paused']):
                 self.model.game_resume()
 
-        if self.input[key.R]:
+        if self.input[key.Q]:
             if(self.model.state == self.model.states['paused']):
-                self.model.game_start()
+                self.model.menu()
 
         if self.input[key.SPACE]:
-            if(self.model.state == self.model.states['game_over']):
+            if(self.model.state == self.model.states['game_over'] or \
+               self.model.state == self.model.states['paused']):
                 self.model.menu()
                 self.switch_to(0)
 
