@@ -36,13 +36,13 @@ class GameModel(pyglet.event.EventDispatcher):
         print 'game paused'
 
     # Start a new game
-    def game_start(self):
+    def game_start(self, type):
         self.left_score = 0
         self.right_score = 0
         self.state = self.states['playing']
-        self.dispatch_event('on_game_start')
+        self.dispatch_event('on_game_start', type)
         self.dispatch_event('on_update_scores')
-        print 'game start'
+        print 'game start', type
 
     def game_resume(self):
         self.state = self.states['playing']

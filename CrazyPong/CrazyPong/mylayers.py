@@ -5,7 +5,7 @@ from cocos.director import director
 from pyglet.window import key
 from collections import defaultdict
 import cocos.collision_model as cm
-from mysprites import PingPong, Paddle
+from mysprites import PingPong, Paddle, ComputerPaddle
 from model import GameModel
 
 
@@ -19,13 +19,7 @@ class PlayLayer(cocos.layer.Layer):
         self.model = model
         width = director._window_virtual_width
         height = director._window_virtual_height
-        super(PlayLayer, self).on_enter()
-        self.pingpong = PingPong(width/2, height/2, self.model)
-        self.lpaddle = Paddle(0, height/2,
-                              255, 0, 0)
-        self.rpaddle = Paddle(width,
-                              height/2,
-                              0, 255, 255)
+        super(PlayLayer, self).on_enter()      
         self.score_text_left = cocos.text.Label("0", position=(20, height - 20), bold=True, font_size = 15, \
                                                 color=(255, 0, 0, 255), width=20, height=20, anchor_x='center', anchor_y='center')
         self.score_text_right = cocos.text.Label("0", position=(width - 20, height - 20), bold=True, font_size = 15, \
@@ -38,30 +32,46 @@ class PlayLayer(cocos.layer.Layer):
                                              color=(0, 0, 0, 0), width=40, height=40, anchor_x='center', anchor_y='center')
         self.pause_info_text = cocos.text.Label("PRESS SPACE TO QUIT TO MENU", position=(width/2, 40), bold=True, font_size = 20,\
                                              color=(51, 153, 255, 255), width=40, height=40, anchor_x='center', anchor_y='center')
-        cellsize = self.pingpong.width * 1.25
-        self.collman = cm.CollisionManagerGrid(0, width, 0, height,
-                                               cellsize, cellsize)
-        self.lpaddle.position = 0, height/2
-        self.rpaddle.position = width, height/2
-        self.add(self.rpaddle)
-        self.add(self.lpaddle)
-        self.add(self.score_text_left)
-        self.add(self.score_text_right)
-        self.add(self.pingpong)  
-        self.model.push_handlers(self)
+        self.pingpong = None
+        self.lpaddle = None
+        self.rpaddle = None
+        self.collman = None
         self.callupdate = None
-
+        self.model.push_handlers(self)
 
     def on_update_scores(self):
         self.score_text_left.element.text = str(self.model.left_score)
         self.score_text_right.element.text = str(self.model.right_score)
 
-    def on_game_start(self):
+    def on_game_start(self, type):
         width = director._window_virtual_width
         height = director._window_virtual_height
+        
+        self.pingpong = PingPong(width/2, height/2, self.model)
+        self.lpaddle = Paddle(0, height/2,
+                              255, 0, 0)
+        
+        if(type == 'computer'):
+            self.rpaddle = ComputerPaddle(width, \
+                                          height/2, \
+                                          0, 255, 255)
+        elif(type == 'player'):
+            self.rpaddle = Paddle(width, \
+                                  height/2, \
+                                  0, 255, 255)
+        cellsize = self.pingpong.width * 1.25
+        self.collman = cm.CollisionManagerGrid(0, width, 0, height,
+                                               cellsize, cellsize)
         self.lpaddle.position = 0, height/2      
         self.rpaddle.position = width, height/2
         self.pingpong.init()
+        
+        self.add(self.rpaddle)
+        self.add(self.lpaddle)
+        self.add(self.score_text_left)
+        self.add(self.score_text_right)
+        self.add(self.pingpong)  
+        
         self.lpaddle.do(RotateBy(360, 2))
         self.rpaddle.do(RotateBy(360, 2))
         self.pingpong.do(RotateBy(360, 2))
@@ -100,6 +110,12 @@ class PlayLayer(cocos.layer.Layer):
     def on_exit(self):
         super(PlayLayer, self).on_exit()
         self.remove_action(self.callupdate)
+        self.remove(self.rpaddle)
+        self.remove(self.lpaddle)
+        self.remove(self.pingpong)
+        self.remove(self.score_text_left)
+        self.remove(self.score_text_right)
+        
         try:
             self.remove(self.winning_text)
             self.remove(self.gameover_info_text)
@@ -130,7 +146,12 @@ class PlayLayer(cocos.layer.Layer):
         
         
         self.lpaddle.do(CallFunc(self.lpaddle.move, lpaddle_dy))
-        self.rpaddle.do(CallFunc(self.rpaddle.move_computer, self.pingpong))
+        
+        if(isinstance(self.rpaddle, ComputerPaddle)):
+            self.rpaddle.do(CallFunc(self.rpaddle.move, self.pingpong))
+        elif(isinstance(self.rpaddle, Paddle)):
+            self.rpaddle.do(CallFunc(self.rpaddle.move, rpaddle_dy))
+        
         self.pingpong.do(CallFunc(self.pingpong.move))
 
 class MenuLayer(cocos.layer.Layer):
@@ -173,14 +194,14 @@ class GameLayer(cocos.layer.MultiplexLayer):
         # Player vs. Player
         if self.input[key._1]:
             if(self.model.state == self.model.states['menu']):
-                self.model.game_start()
+                self.model.game_start('player')
                 self.switch_to(1)
        
         # Player vs. Computer
         if self.input[key._2]:
              if(self.model.state == self.model.states['menu']):
-               # TODO: implement AI for computer
-                pass
+                self.model.game_start('computer')
+                self.switch_to(1)
        
         # Pause game
         if self.input[key.P]:

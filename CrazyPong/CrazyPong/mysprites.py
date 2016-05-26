@@ -8,7 +8,7 @@ from cocos.actions import *
 class PingPong(cocos.sprite.Sprite):
 
     def __init__(self, x, y, model):
-        super(PingPong, self).__init__('KA_Ball.png', scale=.2)
+        super(PingPong, self).__init__('KA_Ball.png', scale=.1)
         self.model = model
         self.postion = x, y
         center = eu.Vector2(x, y)
@@ -149,8 +149,13 @@ class Paddle(cocos.sprite.Sprite):
                 else:
                     self.do(MoveBy((0, bottom_diff * -1), 0)) 
         self.cshape.center = eu.Vector2(self.x, self.y)
+ 
+class ComputerPaddle(Paddle):
 
-    def move_computer(self, pingpong):
+    def __init__(self, x, y, r, g, b):
+        super(ComputerPaddle, self).__init__(x, y, r, g, b)
+
+    def move(self, pingpong):
         width = director._window_virtual_width
         height = director._window_virtual_height
         dy = pingpong.position[1] - self.position[1]
@@ -174,8 +179,5 @@ class Paddle(cocos.sprite.Sprite):
             self.direction = 0
         
         self.do(MoveBy((0, self.velocity * dy), 0))
-
-        
-        
         self.cshape.center = eu.Vector2(self.x, self.y)
- 
+    
