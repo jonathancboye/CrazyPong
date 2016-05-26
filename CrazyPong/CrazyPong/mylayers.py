@@ -128,8 +128,9 @@ class PlayLayer(cocos.layer.Layer):
         lpaddle_dy = self.input[key.W] - self.input[key.S]
         rpaddle_dy = self.input[key.UP] - self.input[key.DOWN]
         
+        
         self.lpaddle.do(CallFunc(self.lpaddle.move, lpaddle_dy))
-        self.rpaddle.do(CallFunc(self.rpaddle.move, rpaddle_dy))
+        self.rpaddle.do(CallFunc(self.rpaddle.move_computer, self.pingpong))
         self.pingpong.do(CallFunc(self.pingpong.move))
 
 class MenuLayer(cocos.layer.Layer):

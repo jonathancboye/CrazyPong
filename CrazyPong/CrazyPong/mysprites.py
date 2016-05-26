@@ -150,4 +150,32 @@ class Paddle(cocos.sprite.Sprite):
                     self.do(MoveBy((0, bottom_diff * -1), 0)) 
         self.cshape.center = eu.Vector2(self.x, self.y)
 
+    def move_computer(self, pingpong):
+        width = director._window_virtual_width
+        height = director._window_virtual_height
+        dy = pingpong.position[1] - self.position[1]
+        self.maxspeed = 10
+     
+        if abs(dy) > self.width/2:
+            self.accleration += .01
+            self.velocity += self.accleration
+            
+            if(self.velocity > self.maxspeed):
+                self.velocity = self.maxspeed
+
+            if dy > 0:
+                dy = 1
+            else:
+                dy = -1
+        else:
+            dy = 0
+            self.velocity = 0
+            self.accleration = 1
+            self.direction = 0
+        
+        self.do(MoveBy((0, self.velocity * dy), 0))
+
+        
+        
+        self.cshape.center = eu.Vector2(self.x, self.y)
  
