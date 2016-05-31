@@ -1,3 +1,10 @@
+# Author: Jonathan Carpenter
+# Email: carpenter.102@wright.edu
+# Date: 5/30/2016
+# File: model.py
+# Description: Contains the model view of the game that dispatches events
+#              and keeps track of the score
+
 import pyglet
 
 class GameModel(pyglet.event.EventDispatcher):

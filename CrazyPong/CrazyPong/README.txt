@@ -1,6 +1,7 @@
 # Author: Jonathan Carpenter
 # Email: carpenter.102@wright.edu
 # Date: 5/30/2016
+# File: README.txt
 
 This program implements a game called crazypong in python.
 The game requires the python coco2d framework to run.

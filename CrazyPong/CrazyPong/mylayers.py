@@ -1,4 +1,10 @@
-﻿import cocos
+﻿# Author: Jonathan Carpenter
+# Email: carpenter.102@wright.edu
+# Date: 5/30/2016
+# File: mylayers.py
+# Description: Contains the view layers of the game that handle game events
+
+import cocos
 import pyglet
 from cocos.actions import *
 from cocos.director import director

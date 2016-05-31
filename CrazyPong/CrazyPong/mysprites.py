@@ -1,3 +1,9 @@
+# Author: Jonathan Carpenter
+# Email: carpenter.102@wright.edu
+# Date: 5/30/2016
+# File: mysprites.py
+# Description: Contains the pingpong sprite and paddle sprites
+
 import cocos
 import cocos.collision_model as cm
 import cocos.euclid as eu
