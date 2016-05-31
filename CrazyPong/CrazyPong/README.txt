@@ -18,6 +18,7 @@ Instructions:
 	== Controls ==
 	Player 1 controls: w for up, s for down
 	Player 2 controls: UP arrow for up, DOWN arrow for down
+	Press P to pause the game.
 
 Included Files:
 
