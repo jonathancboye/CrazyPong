@@ -8,7 +8,7 @@ from cocos.actions import *
 class PingPong(cocos.sprite.Sprite):
 
     def __init__(self, x, y, model):
-        super(PingPong, self).__init__('KA_Ball.png', scale=.1)
+        super(PingPong, self).__init__('SoccerBall.png', scale=.4)
         self.model = model
         self.postion = x, y
         center = eu.Vector2(x, y)
